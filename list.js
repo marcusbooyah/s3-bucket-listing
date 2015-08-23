@@ -124,7 +124,7 @@ function getInfoFromS3Data(xml) {
 //    files: ..
 //    directories: ..
 //    prefix: ...
-// } 
+// }
 function prepareTable(info) {
   var files = info.files.concat(info.directories)
     , prefix = info.prefix
@@ -172,7 +172,11 @@ function renderRow(item, cols) {
   var row = '';
   row += padRight(item.LastModified, cols[1]) + '  ';
   row += padRight(item.Size, cols[2]);
-  row += '<a href="' + item.href + '">' + item.keyText + '</a>';
+  if (isNotebook(getExtension(item.Key))) {
+    row += '<a href="http://nbviewer.ipython.org/url/' + location.hostname + '/' + item.Key + '">' + item.keyText + '</a>';
+  } else {
+    row += '<a href="' + item.href + '">' + item.keyText + '</a>';
+}
   return row;
 }
 
@@ -185,4 +189,18 @@ function padRight(padString, length) {
     str = str + ' ';
   }
   return str;
+}
+
+function getExtension(filename) {
+    var parts = filename.split('.');
+    return parts[parts.length - 1];
+}
+
+function isNotebook(filename) {
+    var ext = getExtension(filename);
+    switch (ext.toLowerCase()) {
+    case 'ipynb':
+        return true;
+    }
+    return false;
 }
